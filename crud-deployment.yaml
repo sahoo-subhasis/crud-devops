@@ -1,0 +1,28 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: crud-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: crud
+  template:
+    metadata:
+      labels:
+        app: crud
+    spec:
+      containers:
+      - name: crud
+        image: int396/crud-app:latest
+        ports:
+        - containerPort: 80
+        env:
+        - name: DB_HOST
+          value: mysql-service
+        - name: DB_USER
+          value: root
+        - name: DB_PASS
+          value: root
+        - name: DB_NAME
+          value: test
