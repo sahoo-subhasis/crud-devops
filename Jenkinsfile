@@ -41,9 +41,9 @@ spec:
 
     stage('Push Image') {
       steps {
-        container('docker') {
-          sh 'docker login -u int396 -p YOUR_DOCKER_TOKEN'
-          sh 'docker push int396/crud-app:latest'
+         container('docker') {
+            sh 'docker login -u int396 -p dckr_pat_xxxxxxxxxxxxx'
+            sh 'docker push int396/crud-app:latest'
         }
       }
     }
