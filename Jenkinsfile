@@ -1,42 +1,61 @@
 pipeline {
-    agent any
+  agent {
+    kubernetes {
+      yaml '''
+apiVersion: v1
+kind: Pod
+spec:
+  containers:
+  - name: docker
+    image: docker:27
+    command:
+    - cat
+    tty: true
+    volumeMounts:
+    - name: docker-sock
+      mountPath: /var/run/docker.sock
 
-    environment {
-        IMAGE = "int396/crud-app:latest"
+  - name: kubectl
+    image: bitnami/kubectl:latest
+    command:
+    - cat
+    tty: true
+
+  volumes:
+  - name: docker-sock
+    hostPath:
+      path: /var/run/docker.sock
+'''
+    }
+  }
+
+  stages {
+
+    stage('Build Image') {
+      steps {
+        container('docker') {
+          sh 'docker build -t int396/crud-app:latest .'
+        }
+      }
     }
 
-    stages {
-
-        stage('Checkout Code') {
-            steps {
-                checkout scm
-            }
+    stage('Push Image') {
+      steps {
+        container('docker') {
+          sh 'docker login -u int396 -p YOUR_DOCKER_TOKEN'
+          sh 'docker push int396/crud-app:latest'
         }
-
-        stage('Build Docker Image') {
-            steps {
-                sh 'docker build -t $IMAGE .'
-            }
-        }
-
-        stage('Docker Login') {
-            steps {
-                sh 'docker login -u YOUR_DOCKER_USERNAME -p YOUR_DOCKER_PASSWORD'
-            }
-        }
-
-        stage('Push Docker Image') {
-            steps {
-                sh 'docker push $IMAGE'
-            }
-        }
-
-        stage('Deploy to Kubernetes') {
-            steps {
-                sh 'kubectl apply -f deployment.yaml'
-                sh 'kubectl apply -f service.yaml'
-            }
-        }
-
+      }
     }
+
+    stage('Deploy to Kubernetes') {
+      steps {
+        container('kubectl') {
+          sh 'kubectl apply -f deployment.yaml'
+          sh 'kubectl apply -f service.yaml'
+        }
+      }
+    }
+
+  }
 }
