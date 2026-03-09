@@ -51,12 +51,19 @@ spec:
 }
 
     stage('Deploy to Kubernetes') {
-      steps {
-        container('kubectl') {
-          sh 'kubectl apply -f deployment.yaml'
-          sh 'kubectl apply -f service.yaml'
+        steps {
+            container('docker') {
+                sh '''
+                apk add --no-cache curl
+                curl -LO "https://dl.k8s.io/release/v1.30.0/bin/linux/amd64/kubectl"
+                chmod +x kubectl
+                mv kubectl /usr/local/bin/
+    
+                kubectl apply -f crud-deployment.yaml
+                kubectl apply -f crud-service.yaml
+                '''
+            }
         }
-      }
     }
 
   }
