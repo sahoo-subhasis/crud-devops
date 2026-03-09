@@ -39,14 +39,16 @@ spec:
       }
     }
 
-    stage('Push Image') {
+   stage('Push Image') {
       steps {
-         container('docker') {
-            sh 'docker login -u int396 -p dckr_pat_xxxxxxxxxxxxx'
-            sh 'docker push int396/crud-app:latest'
-        }
-      }
+        container('docker') {
+          sh '''
+          echo "dckr_pat_iaCQTMjuhkwkNnuRcZa6MNheEfk" | docker login -u int396 --password-stdin
+          docker push int396/crud-app:latest
+          '''
     }
+  }
+}
 
     stage('Deploy to Kubernetes') {
       steps {
