@@ -1,5 +1,5 @@
 <?php
-$databaseHost = 'localhost';
+$databaseHost = 'mysql-service';
 $databaseName = 'test';
 $databaseUsername = 'root';
 $databasePassword = 'root';
