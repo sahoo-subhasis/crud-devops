@@ -14,7 +14,8 @@ spec:
     spec:
       containers:
       - name: crud
-        image: int396/crud-app:latest
+        image: int396/crud-app:latest  
+        imagePullPolicy: Always
         ports:
         - containerPort: 80
         env:
